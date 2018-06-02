@@ -274,9 +274,6 @@ import { getLocaGoodsObj } from '../../common/localStorageHelper.js'
                         goodsBuycount+=item.buycount;
                         this.order.cargoodsobj[item.id]=item.buycount;
                     });
-                    console.log(this.order.cargoodsobj);
-                    console.log(goodsTltal);
-                    console.log(goodsBuycount);
                     this.roderDataList = response.data.message;
                     this.order.goodsAmount = goodsTltal;
                     this.goodsBuycount = goodsBuycount;
