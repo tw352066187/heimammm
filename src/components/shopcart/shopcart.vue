@@ -162,7 +162,21 @@
         },
         methods:{
             getOrder(){
-                this.$router.push({path:"/site/order"})
+                const goodsIds = [];
+                if(this.goodsList.length==0){
+                    this.$message({
+                    message: '至少选择一件商品',
+                    type: 'warning'
+                    });
+                    return;
+                }
+                this.goodsList.forEach(item=>{
+                    if(item.isSelected){
+                    goodsIds.push(item.id);
+                    }
+                })
+
+                this.$router.push({path:`/site/order/${goodsIds.join()}`})
             },
             continueBuy(){
                 this.$router.push({path:"/site/goodslist"})
@@ -200,6 +214,7 @@
                 const shopLoca = getLocaGoodsObj();
                 const num = [];
                 for(var key in shopLoca){
+                    
                     num.push(key);
                 }
                 const url = `site/comment/getshopcargoods/${num.join()}`
@@ -211,6 +226,7 @@
                     });
                     console.log(response.data.message);
                     this.goodsList = response.data.message;
+                    console.log(this.goodsList);
                 }).catch(err=>{
                     console.log(err);
                 });

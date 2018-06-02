@@ -37,7 +37,11 @@ import shopcart from "./components/shopcart/shopcart.vue";
 
 import order from "./components/roder/roder.vue";
 
-import login from "./components/login/login.vue"
+import login from "./components/login/login.vue";
+
+import accounts from "./components/accounts/accounts.vue"
+
+import paySuccess from "./components/accounts/paySuccess.vue"
 
 import {addLocaGoods,getLocaCount,updateLocaCount,deleteLocaGoods} from "./common/localStorageHelper.js"
 
@@ -47,9 +51,10 @@ const router = new VueRouter({//创建路由并设置路由规则
         {path:'/site/goodslist',component:goodslist},
         {path:"/site/goodsinfo/:goodsID",component:goodsinfo},
         {path:'/site/shopcart',component:shopcart},
-        {path:"/site/order",component:order,meta:{needLogin:true}},
-        {path:'/site/login',component:login}
-
+        {path:"/site/order/:goodsIds",component:order,meta:{needLogin:true}},
+        {path:'/site/login',component:login},
+        {path:'/site/accounts/:id',component: accounts},
+        {path:'/site/paySuccess',component: paySuccess}
     ]
 })
 
