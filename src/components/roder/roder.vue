@@ -163,6 +163,7 @@
 import VDistpicker from 'v-distpicker'
 
 import { getLocaGoodsObj } from '../../common/localStorageHelper.js'
+import { deleteLocaGoods } from "../../common/localStorageHelper.js"
 
     export default{
         components: { VDistpicker },
@@ -232,12 +233,15 @@ import { getLocaGoodsObj } from '../../common/localStorageHelper.js'
                 this.$refs.ruleForm.validate((valid) => {
                     if (valid) {
                         const url = `site/validate/order/setorder`;
-                        console.log(this.order);
                         axios.post(url,this.order).then(response=>{
+                            const ids = this.$route.params.goodsIds.split(",");
+                            ids.forEach(item=>{
+                                deleteLocaGoods(item)
+                            })
+                            
                            this.$router.push({path:`/site/accounts/${response.data.message.orderid}`})
                             console.log( response.data);
                         })
-                        
                     } else {
                         console.log('下单错误');
                         return false;
@@ -274,6 +278,9 @@ import { getLocaGoodsObj } from '../../common/localStorageHelper.js'
                         goodsBuycount+=item.buycount;
                         this.order.cargoodsobj[item.id]=item.buycount;
                     });
+                    console.log(this.order.cargoodsobj);
+                    console.log(goodsTltal);
+                    console.log(goodsBuycount);
                     this.roderDataList = response.data.message;
                     this.order.goodsAmount = goodsTltal;
                     this.goodsBuycount = goodsBuycount;
