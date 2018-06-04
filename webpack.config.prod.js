@@ -2,13 +2,23 @@ const HtmlWebpackPlugin = require("html-webpack-plugin");
 const webpack = require("webpack");
 const VueLoaderPlugin = require("vue-loader/lib/plugin");
 const path = require("path");
-
+const CleanWebpackPlugin = require('clean-webpack-plugin')
+//从bundle.js中抽离css
+const ExtractTextPlugin = require("extract-text-webpack-plugin")
 module.exports = {
-  entry: "./src/main.js", //入口
+  entry: {
+    axios: ["axios"],
+    jquery: ["jquery"],
+    "v-distpicker": ["v-distpicker"],
+    "vue-lazyload": ["vue-lazyload"],
+    moment: ["moment"],
+    quanjiatong: ["vue", "vue-router", "vuex"],
+    bundle: "./src/main.js" //千万不要忘记了哦
+  },
   output: {
     //出口
     path: path.join(__dirname, "dist"),
-    filename: "bundle.js"
+    filename: "js/[name].js"
   },
   module: {
     rules: [
@@ -18,13 +28,27 @@ module.exports = {
       },
       {
         test: /\.css$/,
-        use: ["style-loader", "css-loader"]
+        use: ExtractTextPlugin.extract({
+          fallback: "style-loader",
+          use: {
+              loader:'css-loader',
+              options:{
+                  minimize: true, //在抽取css的时候同时进行压缩
+                  publicPath:'dist/css'
+              }
+          }
+        })
       },
       {
         test: /\.(ttf|woff|svg|eot|jpg|png)$/,
         use: [
           {
-            loader: "url-loader"
+            loader: "url-loader",
+            options: {
+              limit: 3000, //阀值,如果大于10KB就从bundle.js中抽出来，反之不抽
+              //这个阀值，不是写死的，是根据你们公司的实际来定的
+              name:'statics/img/[name]-[hash:8].[ext]'
+            }
           }
         ]
       },
@@ -80,6 +104,32 @@ module.exports = {
       output: {
         comments: false //去除copyright
       }
-    })
+    }),
+    new CleanWebpackPlugin("dist"),
+    //抽离第三方包的，这里不要写bundle.js
+    new webpack.optimize.CommonsChunkPlugin({
+      name: [
+        "quanjiatong",
+        "vue-lazyload",
+        "v-distpicker",
+        "moment",
+        "jquery",
+        "axios"
+      ],
+      // name: ['jquery', 'vue-moment','quanjiatong','axios','v-distpicker','vue-lazyload'],
+      // filename: "vendor.js"
+      // (给 chunk 一个不同的名字)
+
+      minChunks: Infinity
+      // (随着 entry chunk 越来越多，
+      // 这个配置保证没其它的模块会打包进 vendor chunk)
+    }),
+
+
+    new ExtractTextPlugin("css/styles-[hash:5].css"),
+
+    //只保留moment中的简体中文
+    new webpack.ContextReplacementPlugin(/moment[\/\\]locale$/, /zh-cn/)
+
   ]
 };
